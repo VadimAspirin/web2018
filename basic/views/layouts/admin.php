@@ -9,7 +9,6 @@ use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
-use yii\helpers\Url;
 
 AppAsset::register($this);
 ?>
@@ -31,7 +30,7 @@ AppAsset::register($this);
     <?php
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
-        'brandUrl' => Url::to(\Yii::$app->getUser()->loginUrl),
+        'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
@@ -39,16 +38,15 @@ AppAsset::register($this);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'items' => [
-            //['label' => 'Home', 'url' => ['/site/index']],
-            //['label' => 'About', 'url' => ['/site/about']],
-            //['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => 'Главная', 'url' => ['/admin/default/index']],
+            ['label' => 'Окна', 'url' => ['/admin/workspace/index']],
             Yii::$app->user->isGuest ? (
-                ['label' => 'Вход', 'url' => ['/site/login']]
+                ['label' => 'Войти', 'url' => ['/site/login']]
             ) : (
                 '<li>'
                 . Html::beginForm(['/site/logout'], 'post')
                 . Html::submitButton(
-                    'Выход (' . Yii::$app->user->identity->login . ')',
+                    'Выйти (' . Yii::$app->user->identity->login . ')',
                     ['class' => 'btn btn-link logout']
                 )
                 . Html::endForm()

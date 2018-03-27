@@ -44,6 +44,7 @@ $config = [
             ],
         ],
         'db' => $db,
+        
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,
@@ -52,6 +53,21 @@ $config = [
             ],
         ],
         */
+        
+    ],
+    'modules' => [
+        'admin' => [
+            'class' => 'app\modules\admin\Module',
+        ],
+        'operator' => [
+            'class' => 'app\modules\operator\Module',
+        ],
+        'terminal' => [
+            'class' => 'app\modules\terminal\Module',
+        ],
+        'api' => [
+            'class' => 'app\modules\api\Api',
+        ],
     ],
     'params' => $params,
 ];

@@ -8,7 +8,8 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
-use app\models\ContactForm;
+use app\models\Users;
+use yii\helpers\Url;
 
 class SiteController extends Controller
 {
@@ -20,13 +21,18 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['logout', 'about'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+					   'actions' => ['about'],
+					   'allow' => true,
+					   'roles' => ['@'],
+				   ],
                 ],
             ],
             'verbs' => [
@@ -54,21 +60,21 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
+
     public function actionIndex()
     {
-        return $this->render('index');
+        if(Yii::$app->user->isGuest)
+			return $this->redirect(Url::to(\Yii::$app->getUser()->loginUrl));
+		else if(Yii::$app->user->identity->role == Users::ROLE_ADMIN)
+			return $this->redirect(['/admin']);
+		else if(Yii::$app->user->identity->role == Users::ROLE_OPERATOR)
+			return $this->redirect(['/operator']);
+		else if(Yii::$app->user->identity->role == Users::ROLE_TERMINAL)
+			return $this->redirect(['/terminal']);
+		else
+			throw new \yii\web\NotFoundHttpException('Page not found.');
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
     public function actionLogin()
     {
         if(!Yii::$app->user->isGuest)
@@ -84,54 +90,19 @@ class SiteController extends Controller
 			
 			if($model->validate())
 			{
-				//var_dump('Валидация пройдена');die();
 				Yii::$app->user->login($model->getUser());
 				return $this->goHome();
 			}
         }
         
-        $model->password = '';
         return $this->render('login', ['model' => $model]);
         
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
         return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

@@ -2,48 +2,48 @@
 
 use yii\db\Migration;
 
-class m180228_165452_ticket extends Migration
+class m180314_193730_ticket extends Migration
 {
-
     public function safeUp()
     {
 		$this->createTable('ticket', [
 			'id' => $this->primaryKey(),
 			'name' => $this->string(50)->notNull(),
+			'workspaceAndOperatorId' => $this->integer(),
 			'dateCreated' => $this->dateTime()->notNull(),
-			'dateCompleted' => $this->dateTime(),
-			'operator' => $this->string(50),
+			'dateDistribution' => $this->dateTime(),
+			'dateProcessingStart' => $this->dateTime(),
+			'dateProcessingEnd' => $this->dateTime(),
 		]);
 		
 		$this->createIndex(
-			'idx-ticket-operator',
+			'idx-ticket-workspaceAndOperatorId',
 			'ticket',
-			'operator'
+			'workspaceAndOperatorId'
 		);
 		
 		$this->addForeignKey(
-			'fk-ticket-operator',
+			'fk-ticket-workspaceAndOperatorId',
 			'ticket',
-			'operator',
-			'users',
-			'login',
-			'SET NULL'
+			'workspaceAndOperatorId',
+			'workspaceAndOperator',
+			'id',
+			'NO ACTION'
 		);
     }
 
     public function safeDown()
     {
 		$this->dropForeignKey(
-			'fk-ticket-operator',
+			'fk-ticket-workspaceAndOperatorId',
 			'ticket'
 		);
 		
 		$this->dropIndex(
-			'idx-ticket-operator',
+			'idx-ticket-workspaceAndOperatorId',
 			'ticket'
 		);
         
         $this->dropTable('ticket');
     }
-    
 }
