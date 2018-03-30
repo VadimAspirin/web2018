@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\Ticket;
 
 /**
  * This is the model class for table "workspaceAndOperator".
@@ -77,5 +78,33 @@ class WorkspaceAndOperator extends \yii\db\ActiveRecord
     public function getWorkspace()
     {
         return $this->hasOne(Workspace::className(), ['id' => 'workspaceId']);
+    }
+
+    public static function workingWorkspaceOperators()
+    {
+        return WorkspaceAndOperator::find()->where(['dateDeparture'=>null])->all();
+    }
+
+    public static function freeWorkspaceOperators()
+    {
+        $busy_tickets = Ticket::find()
+            ->where(['not', ['dateDistribution' => null]])
+            ->andWhere(['dateProcessingEnd' => null])
+            ->all();
+        $working_ops = WorkspaceAndOperator::workingWorkspaceOperators();
+        $busy_workspaceAndOperator_id = [];
+        for ($i = 0; $i < count($busy_tickets); $i++) 
+        {
+            $busy_workspaceAndOperator_id[] = $busy_tickets[$i]['workspaceAndOperatorId'];
+        }
+        $free_workspaceAndOperator = [];
+        for ($i = 0; $i < count($working_ops); $i++) 
+        {
+            if (!in_array($working_ops[$i]['id'], $busy_workspaceAndOperator_id)) 
+            {
+                $free_workspaceAndOperator[] = $working_ops[$i];
+            }
+        }
+        return $free_workspaceAndOperator;
     }
 }

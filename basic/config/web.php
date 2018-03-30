@@ -68,6 +68,9 @@ $config = [
         'api' => [
             'class' => 'app\modules\api\Api',
         ],
+        'display' => [
+            'class' => 'app\modules\display\Module',
+        ],
     ],
     'params' => $params,
 ];
